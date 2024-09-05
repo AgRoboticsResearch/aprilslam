@@ -1,7 +1,7 @@
 <launch>
-	<arg name="use_sim_time" default="false" />
+	<arg name="use_sim_time" default="true" />
 	<arg name="use_zed" default="true" />
-	<arg name="use_bag" default="false" />
+	<arg name="use_bag" default="true" />
 	<!-- Apriltag ros detection -->
 	<include file="$(find apriltag_ros)/launch/continuous_detection.launch" />
 	<!-- Publish transform between tag frame and pointcloud map frame -->
@@ -19,7 +19,10 @@
 	<group if="$(arg use_zed)">
 		<!-- If use bag  -->
         <group if="$(arg use_bag)">
-			<node pkg="rosbag" type="play" name="bag_data" args="--clock  /home/wushaoteng/project/electroMechanical/catkin_ws/data/0719-01.bag" />
+			<node pkg="rosbag" type="play" name="bag_data" args="--clock $(find aprilslam)/data/0719-01.bag">
+				<remap from="/zed2/camera_info" to="/zed2_left/camera_info" />
+				<remap from="/zed2/image_raw" to="/zed2_left/image_raw" />
+			</node>
 		</group>
         
 		<!-- If use original zed2 image and the image is spliced -->

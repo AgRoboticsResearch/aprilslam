@@ -238,9 +238,9 @@ namespace aprilslam
     void Mapper::Optimize(int num_iterations)
     {
         // save factor graph visualization.
-        std::ofstream graph_ofs("./aprilslam.dot");
-        graph_.saveGraph(graph_ofs, results_);
-
+        std::string filename = "./aprilslam.dot";
+        graph_.saveGraph(filename, results_);
+        
         if ((pose_cnt > min_pose_count_))
         {
 

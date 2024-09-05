@@ -25,6 +25,35 @@ add_message_files(DIRECTORY msg FILES Apriltag.msg Apriltags.msg)
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
 catkin_package()
+find_path(TBB_INCLUDE_DIR tbb/tbb.h PATHS /usr/include)
+find_library(TBB_LIBRARY tbb PATHS /usr/lib/x86_64-linux-gnu)
+find_library(TBB_MALLOC_LIBRARY tbbmalloc PATHS /usr/lib/x86_64-linux-gnu)
+
+# 检查 TBB 库是否存在
+if (TBB_INCLUDE_DIR AND TBB_LIBRARY AND TBB_MALLOC_LIBRARY)
+  message(STATUS "Found Intel TBB")
+  include_directories(${TBB_INCLUDE_DIR})
+  set(TBB_LIBRARIES ${TBB_LIBRARY} ${TBB_MALLOC_LIBRARY})
+else()
+  message(FATAL_ERROR "Intel TBB not found")
+endif()
+
+# 创建 TBB::tbb 和 TBB::tbbmalloc 目标
+if(NOT TARGET TBB::tbb)
+  add_library(TBB::tbb SHARED IMPORTED)
+  set_target_properties(TBB::tbb PROPERTIES
+    IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libtbb.so"
+    INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
+  )
+endif()
+
+if(NOT TARGET TBB::tbbmalloc)
+  add_library(TBB::tbbmalloc SHARED IMPORTED)
+  set_target_properties(TBB::tbbmalloc PROPERTIES
+    IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libtbbmalloc.so"
+    INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
+  )
+endif()
 
 include_directories(
     include
